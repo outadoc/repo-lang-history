@@ -92,22 +92,30 @@ def create_parser():
 
 
 def get_latest_commit_date_from_output(output_file):
-    with open(output_file, 'r') as history:
-        history = history.readlines()
-        last_line = history[-1]
+    # Create the file if it doesn't exist
+    if not os.path.exists(output_file):
+        with open(output_file, 'w') as f:
+            f.write('')
 
-        if not last_line:
+    with open(output_file, 'r') as history:
+        # Use the last line of the history file to determine where to start
+        # If no history file exists, start from scratch
+        history = history.readlines()
+
+        if len(history) == 0:
             print("No existing history, starting from scratch")
             return None
-        else:
-            from_date_str = last_line.split(';')[1]
 
-            # Add one second because otherwise we will include this commit twice
-            from_date = datetime.datetime.strptime(
-                from_date_str, DATE_FORMAT) + datetime.timedelta(seconds=1)
+        last_line = history[-1]
 
-            print(f"Starting from {from_date}")
-            return from_date
+        from_date_str = last_line.split(';')[1]
+
+        # Add one second because otherwise we will include this commit twice
+        from_date = datetime.datetime.strptime(
+            from_date_str, DATE_FORMAT) + datetime.timedelta(seconds=1)
+
+        print(f"Starting from {from_date}")
+        return from_date
 
 
 def main():
