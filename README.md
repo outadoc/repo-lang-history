@@ -3,6 +3,8 @@
 This tool generates language history data for every commit in your repository.
 It uses `github-linguist` to generate the language stats.
 
+The historical data is written to a CSV file, and you can use another built-in tool to display it on a graph.
+
 # How to use
 
 ## Generate statistics history
@@ -29,14 +31,14 @@ Build the Docker image:
 docker build -t langhisto .
 ```
 
-Run the program:
+Run the program with Docker, by mapping your repository to the `/repo` path, and the output directory to the `/out` path:
 
 ```bash
 docker run -t \
     -v "/mnt/dev/path/to/repo:/repo" \
-    -v "/mnt/dev/scripts/langhisto/out:/out" \
+    -v "/tmp/repo-history:/out" \
     langhisto \
-    -o /out/langstats.csv \
+    -o /out/language-stats.csv \
     /repo
 ```
 
@@ -54,6 +56,10 @@ options:
   -h, --help  show this help message and exit
 ```
 
+You can use this tool to plot a graph from your generated CSV.
+
 ```
-./display-stats/main.py out/langstats.csv
+$ cd display-stats
+$ pip install -r requirements.txt
+$ ./main.py /tmp/repo-history/language-stats.csv
 ```
